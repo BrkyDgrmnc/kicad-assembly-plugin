@@ -383,33 +383,55 @@ class MainAssemblyDialog(wx.Dialog):
         exported_files = []
 
         try:
-            # 1. CSV
-            if self.chk_csv.GetValue():
-                p = os.path.join(out_dir, f"{safe_prefix}_output.csv")
-                AssemblyExporter.export_to_csv(p, self.components, self.current_preset)
-                exported_files.append(p)
+            is_jlc = self.current_preset.get("is_jlcpcb", False) or "jlcpcb" in self.current_preset.get("id", "").lower()
 
-            # 2. TXT / TSV
-            if self.chk_txt.GetValue():
-                p = os.path.join(out_dir, f"{safe_prefix}_output.txt")
-                AssemblyExporter.export_to_tsv(p, self.components, self.current_preset)
-                exported_files.append(p)
+            if is_jlc and (self.chk_csv.GetValue() or self.chk_xlsx.GetValue()):
+                jlc_files = AssemblyExporter.export_jlcpcb_pair(
+                    out_dir, safe_prefix, self.components,
+                    format_csv=self.chk_csv.GetValue(),
+                    format_xlsx=self.chk_xlsx.GetValue()
+                )
+                exported_files.extend(jlc_files)
 
-            # 3. XLSX
-            if self.chk_xlsx.GetValue():
-                p = os.path.join(out_dir, f"{safe_prefix}_output.xlsx")
-                AssemblyExporter.export_to_excel(p, self.components, self.current_preset)
-                exported_files.append(p)
+                # TXT
+                if self.chk_txt.GetValue():
+                    p = os.path.join(out_dir, f"{safe_prefix}_CPL_JLCPCB.txt")
+                    AssemblyExporter.export_to_tsv(p, self.components, self.current_preset)
+                    exported_files.append(p)
 
-            # 4. JSON
-            if self.chk_json.GetValue():
-                p = os.path.join(out_dir, f"{safe_prefix}_output.json")
-                AssemblyExporter.export_to_json(p, self.components, self.current_preset)
-                exported_files.append(p)
+                # JSON
+                if self.chk_json.GetValue():
+                    p = os.path.join(out_dir, f"{safe_prefix}_JLCPCB.json")
+                    AssemblyExporter.export_to_json(p, self.components, self.current_preset)
+                    exported_files.append(p)
+            else:
+                # 1. CSV
+                if self.chk_csv.GetValue():
+                    p = os.path.join(out_dir, f"{safe_prefix}_output.csv")
+                    AssemblyExporter.export_to_csv(p, self.components, self.current_preset)
+                    exported_files.append(p)
+
+                # 2. TXT / TSV
+                if self.chk_txt.GetValue():
+                    p = os.path.join(out_dir, f"{safe_prefix}_output.txt")
+                    AssemblyExporter.export_to_tsv(p, self.components, self.current_preset)
+                    exported_files.append(p)
+
+                # 3. XLSX
+                if self.chk_xlsx.GetValue():
+                    p = os.path.join(out_dir, f"{safe_prefix}_output.xlsx")
+                    AssemblyExporter.export_to_excel(p, self.components, self.current_preset)
+                    exported_files.append(p)
+
+                # 4. JSON
+                if self.chk_json.GetValue():
+                    p = os.path.join(out_dir, f"{safe_prefix}_output.json")
+                    AssemblyExporter.export_to_json(p, self.components, self.current_preset)
+                    exported_files.append(p)
 
             # 5. ZIP Packaging
             if self.chk_zip.GetValue() and exported_files:
-                zip_path = os.path.join(out_dir, f"{safe_prefix}_Assembly_Package.zip")
+                zip_path = os.path.join(out_dir, f"{safe_prefix}_JLCPCB_Assembly_Package.zip" if is_jlc else f"{safe_prefix}_Assembly_Package.zip")
                 ZipPackager.create_zip_package(zip_path, exported_files)
 
             files_str = "\n".join([f"• {os.path.basename(f)}" for f in exported_files])

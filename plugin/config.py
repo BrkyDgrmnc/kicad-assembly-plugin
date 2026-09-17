@@ -31,11 +31,33 @@ CUSTOM_USER_VENDOR_PRESET = {
     ]
 }
 
+# JLCPCB Official Combined Preset (Official BOM & CPL per JLCPCB Documentation)
+JLCPCB_OFFICIAL_PRESET = {
+    "id": "jlcpcb_official",
+    "name": "JLCPCB - Official Assembly (BOM & CPL)",
+    "description": "Official JLCPCB BOM (Comment, Designator, Footprint, LCSC Part #) and CPL/Centroid (Designator, Val, Package, Mid E, Mid Y, Rotation, Layer)",
+    "file_extension": ".csv",
+    "delimiter": ",",
+    "decimal_separator": ".",
+    "include_header": True,
+    "is_jlcpcb": True,
+    "columns": [
+        {"header": "Designator", "template": "{Reference}"},
+        {"header": "Val", "template": "{Value}"},
+        {"header": "Package", "template": "{Footprint}"},
+        {"header": "Mid E", "template": "{X}"},
+        {"header": "Mid Y", "template": "{Y}"},
+        {"header": "Rotation", "template": "{Rotation}"},
+        {"header": "Layer", "template": "{Layer}"},
+        {"header": "LCSC Part #", "template": "{LCSC}"}
+    ]
+}
+
 # JLCPCB CPL Preset
 JLCPCB_CPL_PRESET = {
     "id": "jlcpcb_cpl",
-    "name": "JLCPCB - CPL (Pick & Place)",
-    "description": "CPL CSV file for JLCPCB assembly service",
+    "name": "JLCPCB - CPL (Pick & Place / Centroid)",
+    "description": "CPL CSV file for JLCPCB assembly (Designator, Val, Package, Mid E, Mid Y, Rotation, Layer)",
     "file_extension": ".csv",
     "delimiter": ",",
     "decimal_separator": ".",
@@ -55,7 +77,7 @@ JLCPCB_CPL_PRESET = {
 JLCPCB_BOM_PRESET = {
     "id": "jlcpcb_bom",
     "name": "JLCPCB - BOM (Bill of Materials)",
-    "description": "BOM CSV file for JLCPCB assembly service",
+    "description": "BOM CSV file for JLCPCB assembly (Comment, Designator, Footprint, LCSC Part #)",
     "file_extension": ".csv",
     "delimiter": ",",
     "decimal_separator": ".",
@@ -150,6 +172,7 @@ LITEPLACER_MACHINE_PRESET = {
 
 ALL_PRESETS = [
     CUSTOM_USER_VENDOR_PRESET,
+    JLCPCB_OFFICIAL_PRESET,
     JLCPCB_CPL_PRESET,
     JLCPCB_BOM_PRESET,
     PCBWAY_CPL_PRESET,

@@ -49,7 +49,7 @@ def run_tests():
     zip_path = os.path.join(test_output_dir, f"{prefix}_Assembly_Package.zip")
 
     AssemblyExporter.export_to_csv(csv_path, components, saved_preset)
-    print(f"[OK] CSV Generated: {csv_path}")
+    print(f"[OK] Standard CSV Generated: {csv_path}")
 
     AssemblyExporter.export_to_tsv(txt_path, components, saved_preset)
     print(f"[OK] TXT (TSV) Generated: {txt_path}")
@@ -60,12 +60,17 @@ def run_tests():
     AssemblyExporter.export_to_json(json_path, components, saved_preset)
     print(f"[OK] JSON Generated: {json_path}")
 
-    all_files = [csv_path, txt_path, xlsx_path, json_path]
+    # 4. JLCPCB Pair Export Test
+    jlc_files = AssemblyExporter.export_jlcpcb_pair(test_output_dir, prefix, components, format_csv=True, format_xlsx=True)
+    for jf in jlc_files:
+        print(f"[OK] Official JLCPCB File Generated: {jf}")
+
+    all_files = [csv_path, txt_path, xlsx_path, json_path] + jlc_files
     ZipPackager.create_zip_package(zip_path, all_files)
     print(f"[OK] ZIP Package Created: {zip_path}")
 
     print("\n==================================================")
-    print("[SUCCESS] All Data Formats (CSV, TXT, XLSX, JSON, ZIP) Verification Passed!")
+    print("[SUCCESS] All Data Formats and JLCPCB Pair Verification Passed!")
     print("==================================================")
 
 if __name__ == "__main__":

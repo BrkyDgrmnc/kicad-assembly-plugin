@@ -1,5 +1,5 @@
 """
-KiCad 10 Dizgi ve Montaj Eklentisi - Konfigürasyon ve Profil Tanımları
+KiCad 10 Assembly & Fabrication Tool - Configuration and Preset Definitions
 """
 
 import os
@@ -7,12 +7,12 @@ import json
 
 APP_NAME = "KiCad Assembly & Fabrication Tool"
 APP_VERSION = "1.0.0"
-AUTHOR = "KiCad Community Developer"
+AUTHOR = "Berkay Değirmenci"
 
-# Varsayılan Firma Şablonu (Kullanıcının paylaştığı görseldeki birebir yapı)
+# Default Custom Assembly Vendor Format
 CUSTOM_USER_VENDOR_PRESET = {
     "id": "custom_user_vendor",
-    "name": "Özel Dizgi Firması (Görselinizdeki Format)",
+    "name": "Custom Assembly Vendor Format",
     "description": "RefDes, PatternName, Type, ValUe, Layer, LocationX, LocationY, Rotation, smd value",
     "file_extension": ".csv",
     "delimiter": ",",
@@ -35,7 +35,7 @@ CUSTOM_USER_VENDOR_PRESET = {
 JLCPCB_CPL_PRESET = {
     "id": "jlcpcb_cpl",
     "name": "JLCPCB - CPL (Pick & Place)",
-    "description": "JLCPCB montaj hizmeti için CPL CSV dosyası",
+    "description": "CPL CSV file for JLCPCB assembly service",
     "file_extension": ".csv",
     "delimiter": ",",
     "decimal_separator": ".",
@@ -55,7 +55,7 @@ JLCPCB_CPL_PRESET = {
 JLCPCB_BOM_PRESET = {
     "id": "jlcpcb_bom",
     "name": "JLCPCB - BOM (Bill of Materials)",
-    "description": "JLCPCB montaj hizmeti için BOM CSV dosyası",
+    "description": "BOM CSV file for JLCPCB assembly service",
     "file_extension": ".csv",
     "delimiter": ",",
     "decimal_separator": ".",
@@ -72,7 +72,7 @@ JLCPCB_BOM_PRESET = {
 PCBWAY_CPL_PRESET = {
     "id": "pcbway_cpl",
     "name": "PCBWay - CPL (Pick & Place)",
-    "description": "PCBWay montaj hizmeti için CPL CSV dosyası",
+    "description": "CPL CSV file for PCBWay assembly service",
     "file_extension": ".csv",
     "delimiter": ",",
     "decimal_separator": ".",
@@ -90,8 +90,8 @@ PCBWAY_CPL_PRESET = {
 # NeoDen PnP Machine Preset (NeoDen4 / YY1)
 NEODEN_MACHINE_PRESET = {
     "id": "neoden_pnp",
-    "name": "Dizgi Makinesi - NeoDen (YY1 / NeoDen4)",
-    "description": "NeoDen PnP montaj makineleri için CSV çıktısı",
+    "name": "Pick & Place Machine - NeoDen (YY1 / NeoDen4)",
+    "description": "CSV output for NeoDen PnP assembly machines",
     "file_extension": ".csv",
     "delimiter": ",",
     "decimal_separator": ".",
@@ -110,8 +110,8 @@ NEODEN_MACHINE_PRESET = {
 # Charmhigh PnP Machine Preset
 CHARMHIGH_MACHINE_PRESET = {
     "id": "charmhigh_pnp",
-    "name": "Dizgi Makinesi - Charmhigh (CHMT Series)",
-    "description": "Charmhigh PnP montaj makineleri için CSV çıktısı",
+    "name": "Pick & Place Machine - Charmhigh (CHMT Series)",
+    "description": "CSV output for Charmhigh PnP assembly machines",
     "file_extension": ".csv",
     "delimiter": ",",
     "decimal_separator": ".",
@@ -130,8 +130,8 @@ CHARMHIGH_MACHINE_PRESET = {
 # LitePlacer Machine Preset
 LITEPLACER_MACHINE_PRESET = {
     "id": "liteplacer_pnp",
-    "name": "Dizgi Makinesi - LitePlacer",
-    "description": "LitePlacer PnP montaj makineleri için CSV çıktısı",
+    "name": "Pick & Place Machine - LitePlacer",
+    "description": "CSV output for LitePlacer PnP assembly machines",
     "file_extension": ".csv",
     "delimiter": ",",
     "decimal_separator": ".",

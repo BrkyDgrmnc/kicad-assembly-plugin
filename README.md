@@ -1,56 +1,51 @@
-# KiCad 10 Dizgi ve Montaj Eklentisi (Assembly & Fabrication Tool)
+# KiCad 10 Assembly & Fabrication Tool
 
-Bu eklenti, **KiCad 10** (ve KiCad 8/9 uyumlu) PCB Editor içerisinde çalışan, tek tıkla dizgi (SMD/THT Montaj) ve üretim dosyalarını (BOM, Pick & Place / CPL, ZIP Arşivi) oluşturan özelleştirilebilir bir Python eklentisidir.
+A customizable Python action plugin for **KiCad 10** (also compatible with KiCad 8 & 9) that generates assembly files (BOM, Pick & Place / CPL, and ZIP packages) with dynamic vendor column templates and Pick & Place machine presets.
 
 ---
 
-## ✨ Özellikler
+## ✨ Key Features
 
-1. **Özelleştirilebilir Sütun & Format Şablon Motoru**:
-   - İstenilen sütun isimleri ve birleşik şablonlar (Örn: `{Footprint}-{Value}` -> `RC1206-0R`).
-   - Görseldeki özel firma formatı **varsayılan ön tanımlı profil** olarak dahil edilmiştir (`RefDes`, `PatternName`, `Type`, `ValUe`, `Layer`, `LocationX`, `LocationY`, `Rotation`, `smd value`).
-2. **Dizgi Makineleri Profil Desteği (Pick & Place Machines)**:
+1. **Customizable Column & Format Template Engine**:
+   - Define custom column headers and dynamic tag expressions (e.g. `{Footprint}-{Value}` -> `RC1206-0R`).
+   - Default custom vendor format (`RefDes`, `PatternName`, `Type`, `ValUe`, `Layer`, `LocationX`, `LocationY`, `Rotation`, `smd value`).
+2. **Pick & Place Machine & Service Presets**:
    - **NeoDen** (YY1, NeoDen4, K1830)
    - **Charmhigh** (CHMT36VA, CHMT48VB)
    - **LitePlacer**
    - **JLCPCB / PCBWay**
-3. **Kullanıcı Dostu Modern wxPython Arayüzü**:
-   - Canlı renkli tablo önizlemesi (eksik LCSC/MPN değerleri soft sarı renk ile uyarılır).
-   - Anlık arama ve filtreleme.
-   - Sütun ekleme, silme, sıralama ve dinamik etiket tanımlama.
-4. **Çıktı Formatları**:
-   - `.csv`, Excel (`.xlsx`) ve tek tıkla `.zip` arşivleme.
+3. **Fiducial & Origin Alignment Modes**:
+   - **Auxiliary Origin**: Uses KiCad auxiliary axis origin.
+   - **Absolute Origin**: Uses board top-left sheet origin (0,0).
+   - **Fiducial (0,0)**: Align coordinates relative to a chosen PCB Fiducial component (e.g., FID1).
+4. **Interactive High-Contrast User Interface**:
+   - Dark Mode compliant grid with soft warning highlights for missing LCSC/MPN data.
+   - Live search & filter bar by RefDes, Value, Footprint, or LCSC/MPN.
+   - Rich interactive tooltips on all UI options.
+5. **Multi-Format Export**:
+   - Native `.xlsx` (without external dependencies), `.csv`, `.txt`, `.json`, and single-click `.zip` package.
 
 ---
 
-## 🛠️ Kurulum
+## 🛠️ Installation
 
-### Yöntem 1: Yerel / Manuel Kurulum (Hemen Kullanım)
-1. Bu klasörü veya `.zip` arşivini indirin.
-2. Klasörü KiCad eklenti dizinine kopyalayın:
+### Method 1: Local / Manual Installation
+1. Clone or download this repository.
+2. Copy the plugin folder to your KiCad plugins directory:
    - **Windows**: `%APPDATA%\kicad\10.0\scripting\plugins\`
    - **Linux**: `~/.local/share/kicad/10.0/scripting/plugins/`
    - **macOS**: `~/Library/Preferences/kicad/10.0/scripting/plugins/`
-3. KiCad PCB Editor'ü açın, üst araç çubuğundaki eklenti simgesine tıklayın.
+3. Open KiCad PCB Editor and click the plugin icon on the top toolbar.
 
-### Yöntem 2: KiCad PCM (Plugin & Content Manager) Yüklemesi
-1. KiCad PCM menüsünü açın.
-2. *"Install from File..."* seçeneğini tıklayıp eklenti zip dosyasını yükleyin.
-
----
-
-## 🌐 KiCad Mağazasında (PCM) Yayınlama Rehberi
-
-Eklentinizi resmi KiCad PCM mağazasına göndermek için:
-1. Bu depoyu GitHub üzerinde yayınlayın ve bir Release (Örn: `v1.0.0`) oluşturun.
-2. `.zip` dosyasının indirme bağlantısını ve `SHA-256` özeti ile `metadata.json` dosyanızı hazırlayın.
-3. [kicad-addons](https://gitlab.com/kicad/code/kicad-addons) resmi deposuna bir Pull Request gönderin.
+### Method 2: KiCad Plugin & Content Manager (PCM)
+1. Open KiCad PCM.
+2. Click **Install from File...** and select the plugin zip archive.
 
 ---
 
-## 🧪 Bağımsız Test Etme (KiCad Dışında)
+## 🧪 Standalone Testing (Outside KiCad)
 
-KiCad olmadan arayüzü ve dışa aktarıcıyı test etmek için:
+To test the GUI and exporter without opening KiCad:
 
 ```bash
 python run_standalone_test.py
@@ -58,6 +53,6 @@ python run_standalone_test.py
 
 ---
 
-## 📜 Lisans
+## 📜 License
 
-Bu proje **MIT Lisansı** ile lisanslanmıştır.
+This project is licensed under the **MIT License**.

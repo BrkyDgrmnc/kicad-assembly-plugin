@@ -1,5 +1,5 @@
 """
-KiCad 10 Dizgi ve Montaj Eklentisi - ActionPlugin Kayıt Dosyası
+KiCad 10 Assembly & Fabrication Tool - ActionPlugin Registration File
 """
 
 import os
@@ -11,12 +11,16 @@ try:
 
     class AssemblyExporterActionPlugin(pcbnew.ActionPlugin):
         def defaults(self):
-            self.name = "KiCad 10 Dizgi ve Montaj Eklentisi"
+            self.name = "KiCad 10 Assembly & Fabrication Tool"
             self.category = "Fabrication / Assembly"
-            self.description = "Özel firma şablonları ve dizgi makineleri için BOM & CPL dosyaları üretir."
+            self.description = "Customizable BOM & Pick and Place (CPL) generator for KiCad 10 with custom vendor templates and machine presets."
             self.show_toolbar_button = True
             
-            icon_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "icon.png"))
+            # Load icon (check icon.png or P&P.png)
+            base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+            icon_path = os.path.join(base_dir, "icon.png")
+            if not os.path.exists(icon_path):
+                icon_path = os.path.join(base_dir, "P&P.png")
             if os.path.exists(icon_path):
                 self.icon_file_name = icon_path
 
@@ -27,5 +31,5 @@ try:
             dialog.Destroy()
 
 except ImportError:
-    # Standalone modda veya pcbnew modülü olmadan çalışıyorsa
+    # Running in standalone mode or without pcbnew
     pass

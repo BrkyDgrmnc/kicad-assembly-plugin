@@ -1,8 +1,8 @@
 {
   "$schema": "https://go.kicad.org/pcm/schemas/v1",
-  "name": "KiCad Assembly & Fabrication Tool (Dizgi Eklentisi)",
+  "name": "KiCad Assembly & Fabrication Tool",
   "description": "Customizable Assembly (BOM, Pick & Place / CPL) file generator for KiCad 10 with custom vendor templates and Pick & Place machine presets.",
-  "description_full": "KiCad 10 ve sonrası için geliştirilmiş, özelleştirilebilir dizgi ve montaj eklentisi. Özel dizgi firması formatları (RefDes, PatternName, smd value vb.), JLCPCB, PCBWay ve NeoDen/Charmhigh PnP dizgi makineleri için tek tıkla üretim dosyaları (CSV, Excel, ZIP) üretir.",
+  "description_full": "A comprehensive KiCad 10 assembly and fabrication plugin. Generates customized BOM and Pick & Place (CPL) files with custom vendor column templates, PnP machine presets (NeoDen, Charmhigh, LitePlacer, JLCPCB, PCBWay), multi-format export (CSV, XLSX, ZIP), and Fiducial origin alignment.",
   "category": "Fabrication",
   "author": {
     "name": "Berkay Değirmenci",

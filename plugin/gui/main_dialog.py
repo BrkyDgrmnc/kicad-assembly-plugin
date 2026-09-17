@@ -1,5 +1,5 @@
 """
-KiCad 10 Dizgi ve Montaj Eklentisi - Ana wxPython Arayüz Dialogu
+KiCad 10 Assembly & Fabrication Tool - Main wxPython Dialog
 """
 
 import os
@@ -17,11 +17,11 @@ from plugin.gui.template_editor import TemplateEditorDialog
 
 class MainAssemblyDialog(wx.Dialog):
     """
-    KiCad 10 Dizgi ve Montaj Eklentisinin kullanıcı dostu ana sekmeli arayüzü.
+    User-friendly multi-tab interface for KiCad 10 Assembly & Fabrication Tool.
     """
 
     def __init__(self, parent=None, board=None):
-        super().__init__(parent, title=f"{APP_NAME} - v{APP_VERSION}", size=(960, 700),
+        super().__init__(parent, title=f"{APP_NAME} - v{APP_VERSION}", size=(980, 720),
                          style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER | wx.MAXIMIZE_BOX)
 
         self.board = board
@@ -29,7 +29,7 @@ class MainAssemblyDialog(wx.Dialog):
         self.selected_fiducial = ""
         self.custom_offsets = dict(DEFAULT_ROTATION_OFFSETS)
 
-        # Proje Adı ve Revizyon No
+        # Project Name & Revision Info
         self.project_name, self.revision = BoardParser.get_board_project_info(self.board)
 
         self.reload_components()
@@ -56,41 +56,44 @@ class MainAssemblyDialog(wx.Dialog):
 
         self.notebook = wx.Notebook(self)
 
-        # Tab 1: Ana Önizleme ve Üretim
+        # Tab 1: Main Preview & Generation
         self.tab_preview = wx.Panel(self.notebook)
         self.setup_tab_preview()
-        self.notebook.AddPage(self.tab_preview, "📊 Dizgi Çıktısı & Önizleme")
+        self.notebook.AddPage(self.tab_preview, "📊 Assembly Output & Preview")
 
-        # Tab 2: Şablon & Sütun Yapılandırması
+        # Tab 2: Template & Column Configuration
         self.tab_template = wx.Panel(self.notebook)
         self.setup_tab_template()
-        self.notebook.AddPage(self.tab_template, "🛠️ Şablon & Özel Profil Yöneticisi")
+        self.notebook.AddPage(self.tab_template, "🛠️ Template & Profile Manager")
 
-        # Tab 3: Makine & Dönüş Açıları / Orijin Seçimi
+        # Tab 3: Machine & Rotation Settings / Origin Selection
         self.tab_settings = wx.Panel(self.notebook)
         self.setup_tab_settings()
-        self.notebook.AddPage(self.tab_settings, "⚙️ Açı & Makine Ayarları")
+        self.notebook.AddPage(self.tab_settings, "⚙️ Rotation & Machine Settings")
 
         main_sizer.Add(self.notebook, 1, wx.EXPAND | wx.ALL, 8)
 
-        # Alt Bar
+        # Bottom Action Bar
         bottom_sizer = wx.BoxSizer(wx.HORIZONTAL)
         
-        self.status_text = wx.StaticText(self, label=f"Toplam {len(self.components)} adet montaj bileşeni yüklendi.")
+        self.status_text = wx.StaticText(self, label=f"Total {len(self.components)} assembly components loaded.")
         self.status_text.SetForegroundColour(wx.Colour(180, 200, 220))
         bottom_sizer.Add(self.status_text, 0, wx.ALIGN_CENTER_VERTICAL | wx.LEFT, 10)
 
         bottom_sizer.AddStretchSpacer()
         
-        btn_close = wx.Button(self, wx.ID_CANCEL, "Kapat")
-        self.btn_export = wx.Button(self, wx.ID_OK, "🚀 Dizgi Dosyalarını Üret")
+        self.btn_close = wx.Button(self, wx.ID_CANCEL, "Close")
+        self.btn_close.SetToolTip("Close the Assembly Plugin dialog.")
+        
+        self.btn_export = wx.Button(self, wx.ID_OK, "🚀 Generate Assembly Files")
+        self.btn_export.SetToolTip("Export all selected assembly format files to the chosen output directory.")
         self.btn_export.SetBackgroundColour(wx.Colour(0, 120, 215))
         self.btn_export.SetForegroundColour(wx.WHITE)
         font = self.btn_export.GetFont()
         font.SetWeight(wx.FONTWEIGHT_BOLD)
         self.btn_export.SetFont(font)
 
-        bottom_sizer.Add(btn_close, 0, wx.RIGHT, 8)
+        bottom_sizer.Add(self.btn_close, 0, wx.RIGHT, 8)
         bottom_sizer.Add(self.btn_export, 0, wx.RIGHT, 10)
 
         main_sizer.Add(bottom_sizer, 0, wx.EXPAND | wx.BOTTOM, 10)
@@ -103,48 +106,68 @@ class MainAssemblyDialog(wx.Dialog):
     def setup_tab_preview(self):
         sizer = wx.BoxSizer(wx.VERTICAL)
 
-        # Proje Adı, Revizyon & Format Seçimi
-        top_box = wx.StaticBox(self.tab_preview, label="Proje Bilgileri ve Dizgi Formatı")
+        # Project Info & Format Box
+        top_box = wx.StaticBox(self.tab_preview, label="Project Information & Preset Format")
         top_sizer = wx.StaticBoxSizer(top_box, wx.HORIZONTAL)
 
-        top_sizer.Add(wx.StaticText(self.tab_preview, label="Proje Adı:"), 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 4)
+        lbl_proj = wx.StaticText(self.tab_preview, label="Project Name:")
+        top_sizer.Add(lbl_proj, 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 4)
+        
         self.txt_project_name = wx.TextCtrl(self.tab_preview, value=self.project_name, size=(140, -1))
+        self.txt_project_name.SetToolTip("Enter project name to prefix exported filenames.")
         top_sizer.Add(self.txt_project_name, 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 12)
 
-        top_sizer.Add(wx.StaticText(self.tab_preview, label="Revizyon No:"), 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 4)
+        lbl_rev = wx.StaticText(self.tab_preview, label="Revision:")
+        top_sizer.Add(lbl_rev, 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 4)
+        
         self.txt_revision = wx.TextCtrl(self.tab_preview, value=self.revision, size=(70, -1))
+        self.txt_revision.SetToolTip("Enter board revision number (e.g. RevA, v1.0) to prefix exported filenames.")
         top_sizer.Add(self.txt_revision, 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 15)
 
-        top_sizer.Add(wx.StaticText(self.tab_preview, label="Profil:"), 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 4)
+        lbl_preset = wx.StaticText(self.tab_preview, label="Preset Profile:")
+        top_sizer.Add(lbl_preset, 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 4)
+        
         preset_names = [p["name"] for p in self.presets]
         self.combo_presets = wx.ComboBox(self.tab_preview, choices=preset_names, style=wx.CB_READONLY)
+        self.combo_presets.SetToolTip("Select a vendor template or Pick & Place machine preset (e.g. Custom Vendor, JLCPCB, NeoDen, Charmhigh).")
         self.combo_presets.SetSelection(0)
         top_sizer.Add(self.combo_presets, 1, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 15)
 
-        top_sizer.Add(wx.StaticText(self.tab_preview, label="🔍 Arama:"), 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 4)
+        lbl_search = wx.StaticText(self.tab_preview, label="🔍 Search:")
+        top_sizer.Add(lbl_search, 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 4)
+        
         self.txt_search = wx.TextCtrl(self.tab_preview, style=wx.TE_PROCESS_ENTER, size=(120, -1))
+        self.txt_search.SetToolTip("Filter components live by RefDes, Value, Footprint, or LCSC/MPN.")
         top_sizer.Add(self.txt_search, 0, wx.ALIGN_CENTER_VERTICAL)
 
         sizer.Add(top_sizer, 0, wx.EXPAND | wx.ALL, 8)
 
-        # Tablo
+        # Table Grid
         self.grid_preview = PreviewGridTable(self.tab_preview)
         sizer.Add(self.grid_preview, 1, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
 
-        # Formatlar ve Çıktı Dizini
-        out_box = wx.StaticBox(self.tab_preview, label="Çıktı Formatları ve Kaydetme Seçenekleri")
+        # Export Formats and Directory
+        out_box = wx.StaticBox(self.tab_preview, label="Export Formats & Destination Directory")
         out_sizer = wx.StaticBoxSizer(out_box, wx.VERTICAL)
 
         fmt_sizer = wx.BoxSizer(wx.HORIZONTAL)
-        fmt_sizer.Add(wx.StaticText(self.tab_preview, label="Üretilecek Formatlar:"), 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 10)
+        lbl_fmts = wx.StaticText(self.tab_preview, label="Output Formats:")
+        fmt_sizer.Add(lbl_fmts, 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 10)
 
         self.chk_csv = wx.CheckBox(self.tab_preview, label="CSV (.csv)")
+        self.chk_csv.SetToolTip("Export assembly data in Comma-Separated Values (.csv) format.")
         self.chk_csv.SetValue(True)
-        self.chk_txt = wx.CheckBox(self.tab_preview, label="Metin (.txt)")
+
+        self.chk_txt = wx.CheckBox(self.tab_preview, label="Tab Text (.txt)")
+        self.chk_txt.SetToolTip("Export assembly data in Tab-Separated Values (.txt) format.")
         self.chk_txt.SetValue(True)
+
         self.chk_xlsx = wx.CheckBox(self.tab_preview, label="Excel (.xlsx)")
+        self.chk_xlsx.SetToolTip("Export assembly data in native Microsoft Excel (.xlsx) spreadsheet format.")
         self.chk_xlsx.SetValue(True)
+
         self.chk_json = wx.CheckBox(self.tab_preview, label="JSON (.json)")
+        self.chk_json.SetToolTip("Export assembly data in JSON (.json) format.")
         self.chk_json.SetValue(False)
 
         fmt_sizer.Add(self.chk_csv, 0, wx.RIGHT, 15)
@@ -155,12 +178,16 @@ class MainAssemblyDialog(wx.Dialog):
         out_sizer.Add(fmt_sizer, 0, wx.EXPAND | wx.ALL, 6)
 
         dir_sizer = wx.BoxSizer(wx.HORIZONTAL)
-        dir_sizer.Add(wx.StaticText(self.tab_preview, label="Kaydetme Dizini:"), 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 6)
+        lbl_dir = wx.StaticText(self.tab_preview, label="Save Directory:")
+        dir_sizer.Add(lbl_dir, 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 6)
+        
         default_dir = os.path.expanduser("~/Desktop")
         self.dir_picker = wx.DirPickerCtrl(self.tab_preview, path=default_dir)
+        self.dir_picker.SetToolTip("Choose the destination folder where output files will be saved.")
         dir_sizer.Add(self.dir_picker, 1, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 15)
 
-        self.chk_zip = wx.CheckBox(self.tab_preview, label="Tümünü ZIP Arşivi Yap (.zip)")
+        self.chk_zip = wx.CheckBox(self.tab_preview, label="Archive All into ZIP (.zip)")
+        self.chk_zip.SetToolTip("Bundle all generated export files into a single .zip archive.")
         self.chk_zip.SetValue(True)
         dir_sizer.Add(self.chk_zip, 0, wx.ALIGN_CENTER_VERTICAL)
 
@@ -176,15 +203,18 @@ class MainAssemblyDialog(wx.Dialog):
     def setup_tab_template(self):
         sizer = wx.BoxSizer(wx.VERTICAL)
 
-        info_box = wx.StaticBox(self.tab_template, label="Özel Profil & Şablon Düzenleme Merkezi")
+        info_box = wx.StaticBox(self.tab_template, label="Custom Profile & Template Editor")
         info_sizer = wx.StaticBoxSizer(info_box, wx.VERTICAL)
 
         self.lbl_preset_info = wx.StaticText(self.tab_template, label="")
         info_sizer.Add(self.lbl_preset_info, 0, wx.ALL, 10)
 
         btn_row = wx.BoxSizer(wx.HORIZONTAL)
-        self.btn_edit_template = wx.Button(self.tab_template, label="⚙️ Sütun Yapısını Düzenle ve İsimle Kaydet...")
-        self.btn_delete_preset = wx.Button(self.tab_template, label="🗑️ Seçili Profili Sil")
+        self.btn_edit_template = wx.Button(self.tab_template, label="⚙️ Customize Columns & Save As Preset...")
+        self.btn_edit_template.SetToolTip("Modify exported column headers, dynamic tags, and save under a new preset name.")
+        
+        self.btn_delete_preset = wx.Button(self.tab_template, label="🗑️ Delete Selected Preset")
+        self.btn_delete_preset.SetToolTip("Delete the currently selected custom preset.")
         self.btn_delete_preset.SetForegroundColour(wx.Colour(200, 0, 0))
 
         btn_row.Add(self.btn_edit_template, 0, wx.RIGHT, 10)
@@ -202,16 +232,21 @@ class MainAssemblyDialog(wx.Dialog):
     def setup_tab_settings(self):
         sizer = wx.BoxSizer(wx.VERTICAL)
         
-        box_origin = wx.StaticBox(self.tab_settings, label="Orijin ve Koordinat Referansı Ayarları (0,0 Noktası)")
+        box_origin = wx.StaticBox(self.tab_settings, label="Origin & Coordinate System Settings (0,0 Point)")
         origin_sizer = wx.StaticBoxSizer(box_origin, wx.VERTICAL)
 
-        self.rb_origin_aux = wx.RadioButton(self.tab_settings, label="Yardımcı Orijin (Auxiliary / User Origin)", style=wx.RB_GROUP)
-        self.rb_origin_abs = wx.RadioButton(self.tab_settings, label="Mutlak Kart Orijini (Absolute Board Origin 0,0)")
+        self.rb_origin_aux = wx.RadioButton(self.tab_settings, label="Auxiliary / User Origin (KiCad Grid Origin)", style=wx.RB_GROUP)
+        self.rb_origin_aux.SetToolTip("Use the PCB Auxiliary Axis Origin set in KiCad.")
+        
+        self.rb_origin_abs = wx.RadioButton(self.tab_settings, label="Absolute Board Origin (KiCad Sheet 0,0)")
+        self.rb_origin_abs.SetToolTip("Use the absolute top-left sheet origin (0,0).")
         
         fid_sizer = wx.BoxSizer(wx.HORIZONTAL)
-        self.rb_origin_fid = wx.RadioButton(self.tab_settings, label="Seçilen Fiducial Bileşeni (Seçilen Fiducial = 0,0):")
+        self.rb_origin_fid = wx.RadioButton(self.tab_settings, label="Selected Fiducial Component (Selected Fiducial = 0,0):")
+        self.rb_origin_fid.SetToolTip("Set the selected Fiducial component's position as the (0,0) origin for all component coordinates.")
         
         self.combo_fiducial = wx.ComboBox(self.tab_settings, choices=self.fiducials, style=wx.CB_READONLY)
+        self.combo_fiducial.SetToolTip("Select the specific Fiducial footprint (e.g. FID1) to act as the (0,0) reference origin.")
         if self.fiducials:
             self.combo_fiducial.SetSelection(0)
             self.selected_fiducial = self.fiducials[0]
@@ -225,12 +260,12 @@ class MainAssemblyDialog(wx.Dialog):
 
         sizer.Add(origin_sizer, 0, wx.EXPAND | wx.ALL, 10)
 
-        box_rot = wx.StaticBox(self.tab_settings, label="Standart Kılıf Dönüş Açı (Rotation Offset) Kuralları")
+        box_rot = wx.StaticBox(self.tab_settings, label="Standard Footprint Rotation Offset Rules")
         rot_sizer = wx.StaticBoxSizer(box_rot, wx.VERTICAL)
 
         self.list_offsets = wx.ListCtrl(self.tab_settings, style=wx.LC_REPORT | wx.LC_SINGLE_SEL, size=(-1, 180))
-        self.list_offsets.InsertColumn(0, "Footprint Kılıf Adı / Kalıbı", width=300)
-        self.list_offsets.InsertColumn(1, "Dönüş Açı Düzeltmesi (Offset Degree)", width=220)
+        self.list_offsets.InsertColumn(0, "Footprint Pattern / Family", width=300)
+        self.list_offsets.InsertColumn(1, "Rotation Offset Angle", width=220)
         rot_sizer.Add(self.list_offsets, 1, wx.EXPAND | wx.ALL, 6)
 
         sizer.Add(rot_sizer, 1, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
@@ -261,7 +296,7 @@ class MainAssemblyDialog(wx.Dialog):
 
         self.reload_components()
         self.update_preview()
-        self.status_text.SetLabel(f"Orijin güncellendi ({self.origin_mode.upper()}). Toplam {len(self.components)} bileşen yeniden hesaplandı.")
+        self.status_text.SetLabel(f"Origin updated ({self.origin_mode.upper()}). Total {len(self.components)} components recalculated.")
 
     def on_fiducial_selected(self, event):
         self.selected_fiducial = self.combo_fiducial.GetValue()
@@ -287,10 +322,10 @@ class MainAssemblyDialog(wx.Dialog):
         cols = [c["header"] for c in self.current_preset.get("columns", [])]
         is_custom = self.current_preset.get("is_custom", False)
         
-        info = f"Aktif Profil: {self.current_preset.get('name')}\n" \
-               f"Açıklama: {desc}\n" \
-               f"Tür: {'Özel Kullanıcı Profili' if is_custom else 'Sistem Hazır Profili'}\n" \
-               f"Mevcut Sütunlar: {', '.join(cols)}"
+        info = f"Active Preset: {self.current_preset.get('name')}\n" \
+               f"Description: {desc}\n" \
+               f"Type: {'Custom User Profile' if is_custom else 'Built-in System Preset'}\n" \
+               f"Columns: {', '.join(cols)}"
         self.lbl_preset_info.SetLabel(info)
         self.btn_delete_preset.Enable(is_custom)
 
@@ -316,7 +351,7 @@ class MainAssemblyDialog(wx.Dialog):
             return
         
         name = self.current_preset.get("name")
-        res = wx.MessageBox(f"'{name}' isimli özel profili silmek istediğinize emin misiniz?", "Profil Silme Onayı", wx.YES_NO | wx.ICON_QUESTION)
+        res = wx.MessageBox(f"Are you sure you want to delete the custom preset '{name}'?", "Confirm Preset Deletion", wx.YES_NO | wx.ICON_QUESTION)
         if res == wx.YES:
             PresetManager.delete_preset(self.current_preset.get("id"))
             self.reload_presets()
@@ -332,11 +367,11 @@ class MainAssemblyDialog(wx.Dialog):
     def on_export(self, event):
         out_dir = self.dir_picker.GetPath()
         if not out_dir or not os.path.exists(out_dir):
-            wx.MessageBox("Lütfen geçerli bir çıktı dizini seçin.", "Hata", wx.OK | wx.ICON_ERROR)
+            wx.MessageBox("Please select a valid output directory.", "Error", wx.OK | wx.ICON_ERROR)
             return
 
         if not any([self.chk_csv.GetValue(), self.chk_txt.GetValue(), self.chk_xlsx.GetValue(), self.chk_json.GetValue()]):
-            wx.MessageBox("Lütfen üretmek istediğiniz en az bir çıktı formatını işaretleyin.", "Hata", wx.OK | wx.ICON_WARNING)
+            wx.MessageBox("Please select at least one output format to generate.", "Warning", wx.OK | wx.ICON_WARNING)
             return
 
         proj_name = self.txt_project_name.GetValue().strip() or "PCB_Project"
@@ -372,15 +407,15 @@ class MainAssemblyDialog(wx.Dialog):
                 AssemblyExporter.export_to_json(p, self.components, self.current_preset)
                 exported_files.append(p)
 
-            # 5. ZIP Paketleme
+            # 5. ZIP Packaging
             if self.chk_zip.GetValue() and exported_files:
                 zip_path = os.path.join(out_dir, f"{safe_prefix}_Assembly_Package.zip")
                 ZipPackager.create_zip_package(zip_path, exported_files)
 
             files_str = "\n".join([f"• {os.path.basename(f)}" for f in exported_files])
-            wx.MessageBox(f"Seçilen tüm dizgi dosyaları başarıyla üretildi!\n\nProje: {proj_name} ({rev_name})\n\nÜretilen Dosyalar:\n{files_str}\n\nKonum:\n{out_dir}",
-                            "Başarılı", wx.OK | wx.ICON_INFORMATION)
+            wx.MessageBox(f"All selected assembly files generated successfully!\n\nProject: {proj_name} ({rev_name})\n\nGenerated Files:\n{files_str}\n\nLocation:\n{out_dir}",
+                            "Success", wx.OK | wx.ICON_INFORMATION)
             self.EndModal(wx.ID_OK)
 
         except Exception as e:
-            wx.MessageBox(f"Dosyalar üretilirken bir hata oluştu:\n{str(e)}", "Hata", wx.OK | wx.ICON_ERROR)
+            wx.MessageBox(f"An error occurred while generating files:\n{str(e)}", "Error", wx.OK | wx.ICON_ERROR)

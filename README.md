@@ -53,6 +53,12 @@ python run_standalone_test.py
 
 ---
 
+## 👥 Author & Credits
+
+Created by **Ahmet Berkay Değirmenci** with contributions from **INARI MEASURE EASY**.
+
+---
+
 ## 📜 License
 
 This project is licensed under the **MIT License**.

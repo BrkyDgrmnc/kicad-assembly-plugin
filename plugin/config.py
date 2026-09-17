@@ -7,7 +7,7 @@ import json
 
 APP_NAME = "KiCad Assembly & Fabrication Tool"
 APP_VERSION = "1.0.0"
-AUTHOR = "Berkay Değirmenci"
+AUTHOR = "Ahmet Berkay Değirmenci"
 
 # Default Custom Assembly Vendor Format
 CUSTOM_USER_VENDOR_PRESET = {

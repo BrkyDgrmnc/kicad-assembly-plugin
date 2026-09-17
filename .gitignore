@@ -1,0 +1,21 @@
+# Python bytecode & cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Temporary test outputs & build files
+test_output/
+*.pdf
+*.xlsx
+*.csv
+*.zip
+
+# IDE & Editor files
+.vscode/
+.idea/
+.DS_Store
+*.swp
+
+# OS generated files
+Thumbs.db
+Desktop.ini
